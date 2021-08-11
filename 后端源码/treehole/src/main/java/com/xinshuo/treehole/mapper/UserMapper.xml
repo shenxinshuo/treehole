@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xinshuo.treehole.mapper.UserMapper">
+    <select id="getUserByID" resultType="com.xinshuo.treehole.entity.User" parameterType="int">
+        select * from t_user where id = #{id}
+    </select>
+    <select id="getUsers" resultType="User">
+        select * from t_user
+    </select>
+    <insert id="addUser" parameterType="com.xinshuo.treehole.entity.User">
+        insert into t_user(username,password,birthday,area,img,created_time,updated_time,lock_flag,telephone) values
+        (#{username},#{password},#{birthday},#{area},#{img},#{created_time},#{updated_time},#{lock_flag},#{telephone})
+    </insert>
+    <update id="updateUser" parameterType="com.xinshuo.treehole.entity.User">
+        update t_user set
+        username = #{username},
+        password = #{password},
+        birthday = #{birthday},
+        area = #{area},
+        img = #{img},
+        updated_time = #{updated_time},
+        telephone = #{telephone},
+        lock_flag = #{lock_flag}
+        where id = #{id}
+    </update>
+    <update id="updateUserImg" parameterType="com.xinshuo.treehole.entity.User">
+        update t_user set img = #{img} where id = #{id}
+    </update>
+    <delete id="deleteUser" parameterType="int">
+        delete from t_user where id = #{id}
+    </delete>
+    <select id="getUserByUsername" parameterType="String" resultType="com.xinshuo.treehole.entity.User">
+        select * from t_user where username = #{username}
+    </select>
+    <select id="getUserByUsernameAndPassword" parameterType="String" resultType="com.xinshuo.treehole.entity.User">
+        select * from t_user where username = #{username} and password = #{password}
+    </select>
+</mapper>

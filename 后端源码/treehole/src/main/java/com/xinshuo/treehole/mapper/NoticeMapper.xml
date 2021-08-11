@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xinshuo.treehole.mapper.NoticeMapper">
+
+    <select id="getNotice" resultType="com.xinshuo.treehole.entity.Notice">
+        select * from t_notice
+    </select>
+    <update id="updateNotice" parameterType="com.xinshuo.treehole.entity.Notice">
+        update t_notice set notice = #{notice}
+    </update>
+</mapper>

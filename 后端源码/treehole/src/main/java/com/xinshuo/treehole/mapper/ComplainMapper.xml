@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xinshuo.treehole.mapper.ComplainMapper">
+    <insert id="addComplain" parameterType="com.xinshuo.treehole.entity.Complain">
+        insert into t_complain(qid,aid,uid,reason,created_time,deal_flag)
+        values(#{qid},#{aid},#{uid},#{reason},#{created_time},#{deal_flag})
+    </insert>
+    <update id="updateComplain" parameterType="com.xinshuo.treehole.entity.Complain">
+        update t_complain set
+        qid = #{qid},
+        aid = #{aid},
+        uid = #{uid},
+        reason = #{reason},
+        updated_time = #{updated_time},
+        deal_flag = #{deal_flag}
+        where id = #{id}
+    </update>
+    <delete id="deleteComplain" parameterType="int">
+        delete from t_complain where id = #{id}
+    </delete>
+    <select id="getComplainsOfNoDeal" resultType="com.xinshuo.treehole.entity.Complain">
+        select * from t_complain where deal_flag = 0
+    </select>
+    <select id="getComplainByID" parameterType="int" resultType="com.xinshuo.treehole.entity.Complain">
+        select * from t_complain where id = #{id}
+    </select>
+</mapper>

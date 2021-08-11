@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xinshuo.treehole.mapper.AnswerMapper">
+
+    <!--  构造多对一关系映射  -->
+    <resultMap id="answer" type="com.xinshuo.treehole.entity.Answer">
+        <id column="id" property="id"></id>
+        <result column="qid" property="qid"></result>
+        <result column="aid" property="aid"/>
+        <result column="uid" property="uid"/>
+        <result column="content" property="content"/>
+        <result column="created_time" property="created_time"/>
+        <result column="delete_flag" property="delete_flag"/>
+        <!--多对一关系-->
+        <association property="user" javaType="com.xinshuo.treehole.entity.User">
+            <id column="uid" property="id"/>
+            <result column="username" property="username"/>
+            <result column="password" property="password"/>
+            <result column="birthday" property="birthday"/>
+            <result column="area" property="area"/>
+            <result column="img" property="img"/>
+            <result column="created_time" property="created_time"/>
+            <result column="updated_time" property="updated_time"/>
+            <result column="lock_flag" property="lock_flag"/>
+            <result column="telephone" property="telephone"/>
+        </association>
+    </resultMap>
+
+    <select id="getAnswerByID" parameterType="int" resultType="com.xinshuo.treehole.entity.Answer">
+        select * from t_answer where id = #{id} and delete_flag = 0 order by created_time desc
+    </select>
+    <select id="getAnswerByAnswerID" resultMap="answer" parameterType="int">
+        select * from t_answer,t_user where t_answer.uid = t_user.id and aid = #{aid} and delete_flag = 0 order by t_answer.created_time desc
+    </select>
+    <select id="getAnswerByQuestionID" resultMap="answer" parameterType="int">
+        select * from t_answer,t_user where t_answer.uid = t_user.id and qid = #{qid} and delete_flag = 0 order by t_answer.created_time desc
+    </select>
+    <select id="getAnswerByUID" parameterType="int" resultMap="answer">
+        select * from t_answer where uid = #{uid} and delete_flag = 0 order by created_time desc
+    </select>
+    <select id="getAnswers" resultType="com.xinshuo.treehole.entity.Answer">
+        select * from t_answer where delete_flag = 0 order by created_time desc
+    </select>
+    <select id="getTotalOfAnswerForAnswer" parameterType="int" resultType="int">
+        select count(id) from t_answer where aid = #{aid} and delete_flag = 0
+    </select>
+    <insert id="addAnswer" parameterType="com.xinshuo.treehole.entity.Answer">
+        insert into t_answer (qid,aid,uid,content,created_time,delete_flag)
+        values(#{qid},#{aid},#{uid},#{content},#{created_time},#{delete_flag})
+    </insert>
+    <update id="updateAnswer" parameterType="com.xinshuo.treehole.entity.Answer">
+        update t_answer set
+        qid = #{qid},
+        aid = #{aid},
+        uid = #{uid},
+        content = #{content},
+        delete_flag = #{delete_flag}
+        where id = #{id}
+    </update>
+    <delete id="deleteAnswer" parameterType="int">
+        delete from t_answer where id = #{id}
+    </delete>
+
+</mapper>

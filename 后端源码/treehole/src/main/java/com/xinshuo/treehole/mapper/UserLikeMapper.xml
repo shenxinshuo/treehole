@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xinshuo.treehole.mapper.UserLikeMapper">
+    <select id="getLikeCountOfQuestion" parameterType="int" resultType="int">
+        select count(*) from t_userlike where likePostID = #{qid} and status = 1
+    </select>
+    <select id="getLikeCountOfAnswer" resultType="int" parameterType="int">
+        select count(*) from t_userlike where likeAnswerID = #{aid} and status = 1
+    </select>
+    <select id="getLikeQuestionsOfUser" parameterType="int" resultType="int">
+        select likePostID from t_userlike where likeUserID = #{uid} and status = 1 and likeQuestionID != 0
+    </select>
+    <select id="getLikeAnswerOfUser" parameterType="int" resultType="int">
+        select likeAnswerID from t_userLike where likeUserID = #{uid} and status = 1 and likeAnswerID != 0
+    </select>
+    <select id="isUserLikedThisQuestion" parameterType="int" resultType="com.xinshuo.treehole.entity.UserLike">
+        select * from t_userlike where likeUserID = #{uid} and likePostID = #{qid}
+    </select>
+    <select id="isUserLikedThisAnswer" parameterType="int" resultType="com.xinshuo.treehole.entity.UserLike">
+        select * from t_userlike where likeUserID =#{uid} and likeAnswerID = #{aid}
+    </select>
+    <insert id="addLikeRecord" parameterType="com.xinshuo.treehole.entity.UserLike">
+        insert into t_userlike(likeUserID,likePostID,likeAnswerID,status)
+        values(#{likeUserID},#{likePostID},#{likeAnswerID},#{status})
+    </insert>
+</mapper>
