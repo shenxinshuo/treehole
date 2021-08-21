@@ -7,7 +7,7 @@
         select * from t_user where id = #{id}
     </select>
     <select id="getUsers" resultType="User">
-        select * from t_user
+        select * from t_user order by created_time desc
     </select>
     <insert id="addUser" parameterType="com.xinshuo.treehole.entity.User">
         insert into t_user(username,password,birthday,area,img,created_time,updated_time,lock_flag,telephone) values

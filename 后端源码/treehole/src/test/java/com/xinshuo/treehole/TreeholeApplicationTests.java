@@ -38,7 +38,7 @@ class TreeholeApplicationTests {
 
     @Test
     void testGetUsers() {
-        List<User> users = userService.getUsers(1, 2);
+        PageInfo<User> users = userService.getUsers(1, 2);
         System.out.println(users);
     }
 

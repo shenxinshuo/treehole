@@ -1,6 +1,7 @@
 package com.xinshuo.treehole.service.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.xinshuo.treehole.entity.User;
 import com.xinshuo.treehole.mapper.UserMapper;
 import com.xinshuo.treehole.service.UserService;
@@ -23,9 +24,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getUsers(int pageNum, int pageSize) {
+    public PageInfo<User> getUsers(int pageNum, int pageSize) {
         PageHelper.startPage(pageNum,pageSize);
-        return userMapper.getUsers();
+        List<User> users = userMapper.getUsers();
+        PageInfo<User> pageInfo = new PageInfo<>(users);
+        return pageInfo;
     }
 
     /**

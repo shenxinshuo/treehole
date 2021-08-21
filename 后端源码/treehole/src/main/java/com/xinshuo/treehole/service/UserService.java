@@ -1,5 +1,6 @@
 package com.xinshuo.treehole.service;
 
+import com.github.pagehelper.PageInfo;
 import com.xinshuo.treehole.entity.User;
 
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.List;
 public interface UserService {
     public User getUserByID(int id);
     //获取所有用户
-    public List<User> getUsers(int pageNum, int pageSize);
+    public PageInfo<User> getUsers(int pageNum, int pageSize);
     //添加用户
     public int addUser(User user);
     //修改用户信息
