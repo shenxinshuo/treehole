@@ -42,7 +42,7 @@
 						<div v-for="(answer,index) in answers">
 							<el-row>
 								<!-- {{answer}} -->
-								<el-avatar size="medium" :src="require('E:/treehole/upload/'+answer.user.img)" shape="square"></el-avatar>
+								<el-avatar size="medium" :src="answer.user.img" shape="square"></el-avatar>
 								<div style="display: inline-block;margin-left: 10px;">
 									<span class="answer_username">{{answer.username}}</span>
 									<br>
@@ -71,7 +71,8 @@
 									{{answer.likeAnswerCount}}
 								</el-button>
 								<el-button type="danger" plain @click="showComplainAnswer(answer.id)">举报</el-button>
-								<el-button type="warning" plain v-if="question.uid == currentUserID" @click="deleteAnswer(answer.id)">删除</el-button>
+								<el-button type="warning" plain v-if="question.uid == currentUserID || answer.uid == currentUserID" @click="deleteAnswer(answer.id)">删除</el-button>
+								<!-- <el-button type="warning" plain v-elseif="answer.uid == currentUserID" @click="deleteAnswer(answer.id)">删除</el-button> -->
 							</el-row>
 							<div v-if="answers[index].show_answer">
 								<AnswerForAnswer :answerID="answer.id"></AnswerForAnswer>
@@ -439,6 +440,9 @@
 					}
 					that.question = response.data.data
 					that.question.created_time = new Date(response.data.data.created_time).toLocaleString()
+					request.get("/getUserByID/"+that.question.uid).then(response => {
+						that.user = response.data.data
+					})
 				})
 			//获取点赞数据
 			request.get("/getLikeCountOfQuestion/"+that.$route.params.id).then(response => {
@@ -489,6 +493,8 @@
 									}
 								})
 							}
+							//修改一下回答用户头像的路径
+							that.$set(that.answers[i].user,"img","http://120.77.37.14:8080/treehole/upload/"+that.answers[i].user.img)
 						})(i);
 					}
 				})
