@@ -1,0 +1,29 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /treehole
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://120.77.37.14:3306/treehole?serverTimezone=Asia/Shanghai
+    username: root
+    password: 2effd7cb20dd4b3a
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  redis:
+    database: 0
+    port: 6379
+    host: localhost
+mybatis:
+  type-aliases-package: com.xinshuo.treehole.entity
+  mapper-locations: com.xinshuo.treehole.mapper/*Mapper.xml
+
+
+#指定数据库
+pagehelper:
+  helper-dialect: mysql
+  #是否启用分页合理化
+  #启用：当pageNum<1时，会自动查询第一页的数据，当pageNum>pages时，自动查询最后一页数据
+  #不启用：以上两种情况都返回空数据
+  reasonable: true

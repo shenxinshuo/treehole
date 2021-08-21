@@ -80,10 +80,10 @@
 				// }
 			},
 			setCookie(name, value) {
-				//半天token过期
-				var Days = 0.5;
+				//30分钟后token过期
+				var hours = 0.5;
 				var exp = new Date();
-				exp.setTime(exp.getTime() + Days * 24 * 60 * 60 * 1000);
+				exp.setTime(exp.getTime() + hours * 60 * 60 * 1000);
 				document.cookie = name + "=" + escape(value) + ";expires=" + exp.toGMTString();
 			}
 		},
@@ -104,9 +104,7 @@
 }
 .login_box {
 	margin-top: 180px;
-	margin-left: ;
+	/* margin-left: ; */
 }
-.login_input input {
-	
-}
+
 </style>

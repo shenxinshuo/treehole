@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="treehole:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>treehole</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="treehole.war">
+      <element id="artifact" artifact-name="treehole:war exploded" />
+    </root>
+  </artifact>
+</component>

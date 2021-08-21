@@ -6,7 +6,13 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="treehole_new" />
+        <module name="user" />
+        <module name="common" />
+        <module name="question" />
+        <module name="background" />
+        <module name="answer" />
+        <module name="like" />
+        <module name="complain" />
       </profile>
     </annotationProcessing>
   </component>

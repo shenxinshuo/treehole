@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xinshuo.treehole.mapper.QuestionMapper">
+
+    <resultMap id="question" type="com.xinshuo.treehole.entity.Question">
+        <id column="id" property="id"/>
+        <result column="uid" property="uid"/>
+        <result column="title" property="title"/>
+        <result column="type" property="type"/>
+        <result column="description" property="description"/>
+        <result column="created_time" property="created_time"/>
+        <result column="delete_flag" property="delete_flag"/>
+        <!--多对一关系-->
+        <association property="user" javaType="com.xinshuo.treehole.entity.User">
+            <id column="id" property="id"/>
+            <result column="username" property="username"/>
+            <result column="password" property="password"/>
+            <result column="birthday" property="birthday"/>
+            <result column="area" property="area"/>
+            <result column="image" property="image"/>
+            <result column="created_time" property="created_time"/>
+            <result column="updated_time" property="updated_time"/>
+            <result column="lock_flag" property="lock_flag"/>
+            <result column="telephone" property="telephone"/>
+        </association>
+    </resultMap>
+
+    <select id="getQuestionByID" parameterType="int" resultMap="question">
+        select * from t_question where id = #{id} and delete_flag = 0
+    </select>
+    <select id="getQuestions" resultMap="question">
+        select * from t_question where delete_flag = 0 order by created_time desc
+    </select>
+    <select id="getQuestionsByType" parameterType="String" resultMap="question">
+        select * from t_question where type = #{type} and delete_flag = 0 order by created_time desc
+    </select>
+    <select id="getQuestionsByUID" parameterType="int" resultMap="question">
+        select * from t_question where uid = #{id} and delete_flag = 0 order by created_time desc
+    </select>
+    <select id="getQuestionsBySearch" resultMap="question" parameterType="String">
+        select * from t_question where title like concat("%",#{search},"%") and delete_flag = 0 order by created_time desc
+    </select>
+    <insert id="addQuestion" parameterType="com.xinshuo.treehole.entity.Question">
+        insert into t_question(uid,title,type,description,created_time,delete_flag)
+        values(#{uid},#{title},#{type},#{description},#{created_time},#{delete_flag})
+    </insert>
+    <update id="updateQuestion" parameterType="com.xinshuo.treehole.entity.Question">
+        update t_question set
+        uid = #{uid},
+        title = #{title},
+        type = #{type},
+        description = #{description},
+        delete_flag = #{delete_flag}
+        where id = #{id}
+    </update>
+    <delete id="deleteQuestion" parameterType="int">
+        delete from t_question where id = #{id}
+    </delete>
+</mapper>

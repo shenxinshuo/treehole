@@ -44,7 +44,7 @@
 		},
 		mounted() {
 			request.get("/getComplainsOfNoDeal?pageNum="+this.pageNum+"&pageSize="+this.pageSize).then(response => {
-				console.log(response)
+				//console.log(response)
 				this.total = response.data.data.total;
 				this.complains = response.data.data.list;
 				for (var i=0; i<this.complains.length; i++){

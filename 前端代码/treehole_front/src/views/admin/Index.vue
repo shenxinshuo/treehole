@@ -12,6 +12,9 @@
 						<el-tab-pane label="管理公告" name="second">
 							<ManageNotice></ManageNotice>
 						</el-tab-pane>
+						<el-tab-pane label="用户管理" name="userControl">
+							<UserControl></UserControl>
+						</el-tab-pane>
 						<el-tab-pane label="审核" name="third">审核</el-tab-pane>
 					</el-tabs>
 				</el-card>
@@ -24,6 +27,7 @@
 	import request from '@/utils/request.js'
 	import Index from '@/components/complain/index.vue'
 	import ManageNotice from '@/components/notice/ManageNotice.vue'
+	import UserControl from '@/components/user/UserControl.vue'
 	export default {
 		data() {
 			return {
@@ -44,7 +48,7 @@
 			this.admin.name = getCookie("currentAdmin");
 		},
 		components: {
-			Index,ManageNotice
+			Index,ManageNotice,UserControl
 		}
 	}
 </script>
