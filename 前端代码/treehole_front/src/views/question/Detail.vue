@@ -11,6 +11,11 @@
 						作者 ：{{user.username}}
 						<span v-html="kongge"></span>
 						{{question.created_time}}
+						<span :span="10" v-html="'\u00a0\u00a0\u00a0\u00a0'"/>
+						<span>
+							<i class="el-icon-view"/>
+							{{question.lookCount}}
+						</span>
 						<br><br>
 						<p>
 							<div v-html="question.description"></div>
@@ -118,402 +123,466 @@
 </template>
 
 <script>
-	import request from '@/utils/request.js'
-	import avatar from '@/assets/img/login_bg.jpg';
-	import AnswerForAnswer from '@/components/answer/AnswerForAnswer.vue'
-	import editoritem from '@/components/grobal/EditorItem.vue'
-	export default {
-		data() {
-			return {
-				pageNum: 1,
-				pageSize: 10,
-				total: '',
-				reload: '',
-				show_answer: false,
-				user: {
-					id: '1',
-					username: "沈鑫烁",
-					img: avatar
-				},
-				kongge: '&nbsp;&nbsp;&nbsp;&nbsp;',
-				question: {
-					id: this.$route.params.id,
-					uid: "1",
-					title: "为什么 2020 年底突然很多地方开始限电？",
-					type: "",
-					description: "为什么突然很多地方开始限电？ 近日，湖南、浙江等地，陆续发布了“有序用电”通知，多年不见的“拉闸限电”再现。国网湖南电力新闻发言人陈浩表示， 发电能力相对滞后造成了湖南省供电出现缺口。他认为，近几年，湖南全省工业、商业、居民生活用电负荷、用电量全部持续增长 ，但电源装机容量并未大幅增长。和湖南一样因为发电能力滞后，而面临限电风险的还有江西和陕西省。浙江省的限电主要受工业用电高峰来临 ，电力供应保障压力增大影响。浙江省的限电还受“双控”和“减煤”工作面临的严峻形势和绿色发展的要求影响。（界面新闻） 湖南、浙江多地“拉闸限电”，背后原因却不一样|界面新闻 ​ www.jiemian.com 图标 近期湖南、江西电力供应偏紧，浙江也出现限制用电情况。国家发改委17日回应称，工业生产高速增长和低温寒流叠加导致电力需求超预期高速增长。 目前为止电力供应保持平稳有序，居民生活用电未受影响。国家发改委已会同相关部门企业，采取措施切实保障电力需求，确保电力供应总体平稳有序。 （新华社记者安蓓）",
-					created_time: "2020-12-19 ",
-					delete_flag: ""
-				},
-				answerForAnswerTotal: '520',
-				answers: [{
-
-				}],
-				answerVisible: false,
-				answerForAnswerVisible: false,
-				complainQuestionVisible: false,
-				complainAnswerVisible: false,
-				complainAnswerID: '',
-				comp: "",
-				answer: {
-					//id: '',
-					content: '',
-				},
-				answerForQuestionTotal: '',
-				isClear: false,
-				currentUserID: this.getCookie("currentUserID"),
-				isDelete: false,
-				likeQuestionCount: 0,
-				userLike: {
-					likeUserID: this.currentUserID,
-					likePostID: this.$route.params.id,
-					likeAnswerID: 0,
-					status: 0
-				}
-			}
-		},
-		methods: {
-			handleSizeChange() {
-
-			},
-			handleCurrentChange() {
-				request.get("/getAnswerByQuestionID/" + that.$route.params.id + "?pageNum=" + this.pageNum + "&pageSize=" + this.pageSize)
-					.then(response => {
-						that.answers = response.data.data.list
-						that.answerForQuestionTotal = response.data.data.total
-						for (var i = 0; i < that.answers.length; i++) {
-							that.$set(this.answers[i], 'show_answer', false)
-							that.answers[i].created_time = new Date(that.answers[i].created_time).toLocaleString()
-						}
-						for (var i = 0; i < that.answers.length; i++) {
-							(function(i) {
-								console.log(i)
-								request.get("/getTotalOfAnswerForAnswer/" + that.answers[i].id)
-									.then(response => {
-										// console.log(that.answers[i])
-										//that.answers[i].total = response.data.data
-										that.$set(that.answers[i], 'total', response.data.data)
-									})
-							})(i);
-						}
-					})
-			},
-			seeAnswer(index) { //alert(this.answers[index].show_answer)
-				//console.log(this.answers[index])
-				//console.log(this.a)
-				if (this.answers[index].show_answer == true) {
-					//console.log(this.answers[index])
-					this.answers[index].show_answer = false;
-				} else {
-					//alert(this.answers[index].show_answer)
-					this.answers[index].show_answer = true;
-				}
-				//this.answers[index].username = "xinshuo"
-				//this.answers[index].show_answer = true
-				//this.$set(this.answers,this.answers[index].show_answer,true)
-			},
-			handleClose() {
-
-			},
-			addAnswer() {
-				var that = this
-				request.post("/addAnswer", {
-					qid: this.question.id,
-					content: this.answer.content,
-					uid: that.getCookie("currentUserID")
-				}).then(response => {
-					// console.log(response)
-					if (response.data.status == 200) {
-						this.$message.success("回答成功")
-						this.answerVisible = false
-						location.reload()
-					}
-				})
-			},
-			getCookie(name) {
-				var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
-				if (arr = document.cookie.match(reg))
-					return unescape(arr[2]);
-				else
-					return null;
-			},
-			showAddAnswerForAnswer(answerID) {
-				this.answerForAnswerVisible = true
-				this.answer.id = answerID
-			},
-			addAnswerForAnswer() {
-				request.post("/addAnswer", {
-					aid: this.answer.id,
-					content: this.answer.content,
-					uid: this.getCookie("currentUserID")
-				}).then(response => {
-					//console.log(response)
-					if (response.data.status == 200) {
-						this.$message.success("回答成功")
-						this.answerVisible = false
-						location.reload()
-					}
-				})
-			},
-			complainQuestion() {
-				if (this.comp.length == 0) {
-					this.$message.error("举报内容不能为空")
-					return
-				}
-				if (this.comp.length > 255) {
-					this.$message.error("请将字数控制在255字以内")
-					return
-				}
-				request.post("/addComplain", {
-					qid: this.question.id,
-					uid: this.getCookie("currentUserID"),
-					reason: this.comp
-				}).then(response => {
-					if (response.data.status == 200) {
-						this.$message.success("举报问题成功")
-						this.complainQuestionVisible = false
-						location.reload()
-					}
-				})
-			},
-			showComplainAnswer(answerID) {
-				this.complainAnswerVisible = true
-				this.complainAnswerID = answerID
-			},
-			complainAnswer() {
-				if (this.comp.length == 0) {
-					this.$message.error("举报内容不能为空")
-					return
-				}
-				if (this.comp.length > 255) {
-					this.$message.error("请将字数控制在255字以内")
-					return
-				}
-				request.post("/addComplain", {
-					aid: this.complainAnswerID,
-					uid: this.getCookie("currentUserID"),
-					reason: this.comp
-				}).then(response => {
-					if (response.data.status == 200) {
-						this.$message.success("举报问题成功")
-						this.complainAnswerVisible = false
-						location.reload()
-					}
-				})
-			},
-			deleteQuestion(qid) {
-				this.$confirm("将永久删除该问题，确定吗？", "确认删除", {
-					confirmButtonText: '确认删除',
-					cancelButtonText: '取消',
-					type: 'warring'
-				}).then(() => {
-					request.post("/deleteQuestion/" + qid).then(response => {
-						if (response.data.status == 200) {
-							this.$message.success("删除成功")
-							window.history.back(-1)
-						} else {
-							this.$message.error("删除失败")
-						}
-					})
-				}).catch(() => {
-					this.$message.info("取消删除")
-				})
-			},
-			deleteAnswer(aid) {
-				this.$confirm("将永久删除该回答，确定吗？","确认删除", {
-					confirmButtonText: '确认删除',
-					cancelButtonText: '取消',
-					type: 'warring'
-				}).then(()=>{
-					request.post("/deleteAnswer/"+aid).then(response => {
-						if (response.data.status == 200) {
-							this.$message.success("删除成功")
-							location.reload()
-						} else {
-							this.$message.error("删除失败")
-						}
-					})
-				}).catch(()=> {
-					this.$message.info("取消删除")
-				})
-			},
-			giveALikeForQuestion() {
-				//点赞问题
-				var currentUserID = this.getCookie("currentUserID")
-				if (currentUserID == null) {
-					this.$router.push("/user/login")
-					this.$message.error("请先登录")
-					return;
-				}
-				request.post("/userLike", {
-					"likeUserID": currentUserID,
-					"likePostID": this.question.id,
-					"likeAnswerID": 0
-				}).then(response => {
-					if (response.data.status == 200){
-						this.$message.success("点赞成功");
-						this.likeQuestionCount++;
-						this.userLike.status = 1
-					} else {
-						this.$message.error("取消点赞失败")
-					}
-				})
-			},
-			giveALikeForAnswer(aid,index) {
-				//点赞回复
-				var currentUserID = this.getCookie("currentUserID")
-				if (currentUserID == null) {
-					this.$router.push("/user/login")
-					this.$message.error("请先登录")
-				}
-				request.post("/userLike", {
-					"likeUserID": currentUserID,
-					"likePostID": 0,
-					"likeAnswerID": aid
-				}).then(response => {
-					if (response.data.status == 200) {
-						//点赞成功
-						this.$message.success("点赞成功");
-						this.answers[index].likeAnswerCount++;
-						this.answers[index].likeThisAnswer = true
-					} else {
-						this.$message.error("点赞失败")
-					}
-				})
-			},
-			unLikeForQuestion() {
-				//取消点赞问题
-				var currentUserID = this.getCookie("currentUserID")
-				if (currentUserID == null) {
-					this.$router.push("/user/login")
-					this.$message.error("请先登录")
-					return;
-				}
-				request.post("/userUnLike", {
-					"likeUserID": currentUserID,
-					"likePostID": this.question.id,
-					"likeAnswerID": 0
-				}).then(response => {
-					if (response.data.status == 200) {
-						this.$message.success("取消点赞成功");
-						this.likeQuestionCount--;
-						this.userLike.status = 0;
-					} else {
-						this.$message.error("取消点赞失败")
-					}
-				})
-			},
-			unLikeForAnswer(aid,index) {
-				//取消点赞回复
-				var currentUserID = this.getCookie("currentUserID")
-				if (currentUserID == null) {
-					this.$router.push("/user/login")
-					this.$message.error("请先登录")
-					return;
-				}
-				request.post("/userUnLike", {
-					"likeUserID": currentUserID,
-					"likePostID": 0,
-					"likeAnswerID": aid
-				}).then(response => {
-					if (response.data.status == 200) {
-						this.$message.success("取消点赞成功");
-						this.answers[index].likeAnswerCount--;
-						this.answers[index].likeThisAnswer = false;
-						//console.log("index:"+index)
-					} else {
-						this.$message.error("取消点赞失败")
-					}
-				})
-			}
-		},
-		components: {
-			AnswerForAnswer,
-			editoritem
-		},
-		mounted() {
-			var that = this
-			request.get("/getQuestionByID/" + that.$route.params.id)
-				.then(response => {
-					if (response.data.data == null) {
-						that.isDelete = true;
-					}
-					that.question = response.data.data
-					that.question.created_time = new Date(response.data.data.created_time).toLocaleString()
-					request.get("/getUserByID/"+that.question.uid).then(response => {
-						that.user = response.data.data
-					})
-				})
-			//获取点赞数据
-			request.get("/getLikeCountOfQuestion/"+that.$route.params.id).then(response => {
-				that.likeQuestionCount = response.data.data
-			})
-			//查看登录用户是否已经点赞过该问题
-			if (this.currentUserID != null) {
-				request.get("/isUserLikedThisQuestion/"+this.currentUserID+"/"+this.$route.params.id).then(response => {
-					//console.log(response)
-					if (response.data.data == true) {
-						//点赞过该问题
-						this.userLike.status = 1
-					} else {
-						//未点赞
-						this.userLike.status = 0
-					}
-				})
-			}
-			request.get("/getAnswerByQuestionID/" + that.$route.params.id + "?pageNum=1&pageSize=10")
-				.then(response => {
-					that.answers = response.data.data.list
-					that.answerForQuestionTotal = response.data.data.total
-					for (var i = 0; i < that.answers.length; i++) {
-						that.$set(this.answers[i], 'show_answer', false)
-						that.answers[i].created_time = new Date(that.answers[i].created_time).toLocaleString()
-					}
-					for (var i = 0; i < that.answers.length; i++) {
-						(function(i) {
-							request.get("/getTotalOfAnswerForAnswer/" + that.answers[i].id)
-								.then(response => {
-									// console.log(that.answers[i])
-									//that.answers[i].total = response.data.data
-									that.$set(that.answers[i], 'total', response.data.data)
-								})
-							//获取回复的点赞记录
-							request.get("/getLikeCountOfAnswer/"+that.answers[i].id).then(response => {
-								that.$set(that.answers[i],"likeAnswerCount",response.data.data)
-							})
-							//查询登录用户是否点赞过该回复
-							if (that.currentUserID != null) {
-								request.get("/isUserLikedThisAnswer/"+that.currentUserID+"/"+that.answers[i].id).then(response => {
-									if (response.data.data == true) {
-										//点赞过该回复
-										that.$set(that.answers[i],"likeThisAnswer",true)
-									} else {
-										//未点赞
-										that.$set(that.answers[i],"likeThisAnswer",false)
-									}
-								})
-							}
-							//修改一下回答用户头像的路径
-							that.$set(that.answers[i].user,"img","http://120.77.37.14:8080/treehole/upload/"+that.answers[i].user.img)
-						})(i);
-					}
-				})
-		},
-
-	}
+import request from "@/utils/request.js";
+import avatar from "@/assets/img/login_bg.jpg";
+import AnswerForAnswer from "@/components/answer/AnswerForAnswer.vue";
+import editoritem from "@/components/grobal/EditorItem.vue";
+export default {
+  data() {
+    return {
+      pageNum: 1,
+      pageSize: 10,
+      total: "",
+      reload: "",
+      show_answer: false,
+      user: {
+        id: "1",
+        username: "沈鑫烁",
+        img: avatar,
+      },
+      kongge: "&nbsp;&nbsp;&nbsp;&nbsp;",
+      question: {
+        id: this.$route.params.id,
+        uid: "1",
+        title: "为什么 2020 年底突然很多地方开始限电？",
+        type: "",
+        description:
+          "为什么突然很多地方开始限电？ 近日，湖南、浙江等地，陆续发布了“有序用电”通知，多年不见的“拉闸限电”再现。国网湖南电力新闻发言人陈浩表示， 发电能力相对滞后造成了湖南省供电出现缺口。他认为，近几年，湖南全省工业、商业、居民生活用电负荷、用电量全部持续增长 ，但电源装机容量并未大幅增长。和湖南一样因为发电能力滞后，而面临限电风险的还有江西和陕西省。浙江省的限电主要受工业用电高峰来临 ，电力供应保障压力增大影响。浙江省的限电还受“双控”和“减煤”工作面临的严峻形势和绿色发展的要求影响。（界面新闻） 湖南、浙江多地“拉闸限电”，背后原因却不一样|界面新闻 ​ www.jiemian.com 图标 近期湖南、江西电力供应偏紧，浙江也出现限制用电情况。国家发改委17日回应称，工业生产高速增长和低温寒流叠加导致电力需求超预期高速增长。 目前为止电力供应保持平稳有序，居民生活用电未受影响。国家发改委已会同相关部门企业，采取措施切实保障电力需求，确保电力供应总体平稳有序。 （新华社记者安蓓）",
+        created_time: "2020-12-19 ",
+        delete_flag: "",
+		lookCount: 0
+      },
+      answerForAnswerTotal: "520",
+      answers: [{}],
+      answerVisible: false,
+      answerForAnswerVisible: false,
+      complainQuestionVisible: false,
+      complainAnswerVisible: false,
+      complainAnswerID: "",
+      comp: "",
+      answer: {
+        //id: '',
+        content: "",
+      },
+      answerForQuestionTotal: "",
+      isClear: false,
+      currentUserID: this.getCookie("currentUserID"),
+      isDelete: false,
+      likeQuestionCount: 0,
+      userLike: {
+        likeUserID: this.currentUserID,
+        likePostID: this.$route.params.id,
+        likeAnswerID: 0,
+        status: 0,
+      },
+    };
+  },
+  methods: {
+    handleSizeChange() {},
+    handleCurrentChange() {
+      request
+        .get(
+          "/getAnswerByQuestionID/" +
+            that.$route.params.id +
+            "?pageNum=" +
+            this.pageNum +
+            "&pageSize=" +
+            this.pageSize
+        )
+        .then((response) => {
+          that.answers = response.data.data.list;
+          that.answerForQuestionTotal = response.data.data.total;
+          for (var i = 0; i < that.answers.length; i++) {
+            that.$set(this.answers[i], "show_answer", false);
+            that.answers[i].created_time = new Date(
+              that.answers[i].created_time
+            ).toLocaleString();
+          }
+          for (var i = 0; i < that.answers.length; i++) {
+            (function (i) {
+              console.log(i);
+              request
+                .get("/getTotalOfAnswerForAnswer/" + that.answers[i].id)
+                .then((response) => {
+                  // console.log(that.answers[i])
+                  //that.answers[i].total = response.data.data
+                  that.$set(that.answers[i], "total", response.data.data);
+                });
+            })(i);
+          }
+        });
+    },
+    seeAnswer(index) {
+      //alert(this.answers[index].show_answer)
+      //console.log(this.answers[index])
+      //console.log(this.a)
+      if (this.answers[index].show_answer == true) {
+        //console.log(this.answers[index])
+        this.answers[index].show_answer = false;
+      } else {
+        //alert(this.answers[index].show_answer)
+        this.answers[index].show_answer = true;
+      }
+      //this.answers[index].username = "xinshuo"
+      //this.answers[index].show_answer = true
+      //this.$set(this.answers,this.answers[index].show_answer,true)
+    },
+    handleClose() {},
+    addAnswer() {
+      var that = this;
+      request
+        .post("/addAnswer", {
+          qid: this.question.id,
+          content: this.answer.content,
+          uid: that.getCookie("currentUserID"),
+        })
+        .then((response) => {
+          // console.log(response)
+          if (response.data.status == 200) {
+            this.$message.success("回答成功");
+            this.answerVisible = false;
+            location.reload();
+          }
+        });
+    },
+    getCookie(name) {
+      var arr,
+        reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+      if ((arr = document.cookie.match(reg))) return unescape(arr[2]);
+      else return null;
+    },
+    showAddAnswerForAnswer(answerID) {
+      this.answerForAnswerVisible = true;
+      this.answer.id = answerID;
+    },
+    addAnswerForAnswer() {
+      request
+        .post("/addAnswer", {
+          aid: this.answer.id,
+          content: this.answer.content,
+          uid: this.getCookie("currentUserID"),
+        })
+        .then((response) => {
+          //console.log(response)
+          if (response.data.status == 200) {
+            this.$message.success("回答成功");
+            this.answerVisible = false;
+            location.reload();
+          }
+        });
+    },
+    complainQuestion() {
+      if (this.comp.length == 0) {
+        this.$message.error("举报内容不能为空");
+        return;
+      }
+      if (this.comp.length > 255) {
+        this.$message.error("请将字数控制在255字以内");
+        return;
+      }
+      request
+        .post("/addComplain", {
+          qid: this.question.id,
+          uid: this.getCookie("currentUserID"),
+          reason: this.comp,
+        })
+        .then((response) => {
+          if (response.data.status == 200) {
+            this.$message.success("举报问题成功");
+            this.complainQuestionVisible = false;
+            location.reload();
+          }
+        });
+    },
+    showComplainAnswer(answerID) {
+      this.complainAnswerVisible = true;
+      this.complainAnswerID = answerID;
+    },
+    complainAnswer() {
+      if (this.comp.length == 0) {
+        this.$message.error("举报内容不能为空");
+        return;
+      }
+      if (this.comp.length > 255) {
+        this.$message.error("请将字数控制在255字以内");
+        return;
+      }
+      request
+        .post("/addComplain", {
+          aid: this.complainAnswerID,
+          uid: this.getCookie("currentUserID"),
+          reason: this.comp,
+        })
+        .then((response) => {
+          if (response.data.status == 200) {
+            this.$message.success("举报问题成功");
+            this.complainAnswerVisible = false;
+            location.reload();
+          }
+        });
+    },
+    deleteQuestion(qid) {
+      this.$confirm("将永久删除该问题，确定吗？", "确认删除", {
+        confirmButtonText: "确认删除",
+        cancelButtonText: "取消",
+        type: "warring",
+      })
+        .then(() => {
+          request.post("/deleteQuestion/" + qid).then((response) => {
+            if (response.data.status == 200) {
+              this.$message.success("删除成功");
+              window.history.back(-1);
+            } else {
+              this.$message.error("删除失败");
+            }
+          });
+        })
+        .catch(() => {
+          this.$message.info("取消删除");
+        });
+    },
+    deleteAnswer(aid) {
+      this.$confirm("将永久删除该回答，确定吗？", "确认删除", {
+        confirmButtonText: "确认删除",
+        cancelButtonText: "取消",
+        type: "warring",
+      })
+        .then(() => {
+          request.post("/deleteAnswer/" + aid).then((response) => {
+            if (response.data.status == 200) {
+              this.$message.success("删除成功");
+              location.reload();
+            } else {
+              this.$message.error("删除失败");
+            }
+          });
+        })
+        .catch(() => {
+          this.$message.info("取消删除");
+        });
+    },
+    giveALikeForQuestion() {
+      //点赞问题
+      var currentUserID = this.getCookie("currentUserID");
+      if (currentUserID == null) {
+        this.$router.push("/user/login");
+        this.$message.error("请先登录");
+        return;
+      }
+      request
+        .post("/userLike", {
+          likeUserID: currentUserID,
+          likePostID: this.question.id,
+          likeAnswerID: 0,
+        })
+        .then((response) => {
+          if (response.data.status == 200) {
+            this.$message.success("点赞成功");
+            this.likeQuestionCount++;
+            this.userLike.status = 1;
+          } else {
+            this.$message.error("取消点赞失败");
+          }
+        });
+    },
+    giveALikeForAnswer(aid, index) {
+      //点赞回复
+      var currentUserID = this.getCookie("currentUserID");
+      if (currentUserID == null) {
+        this.$router.push("/user/login");
+        this.$message.error("请先登录");
+      }
+      request
+        .post("/userLike", {
+          likeUserID: currentUserID,
+          likePostID: 0,
+          likeAnswerID: aid,
+        })
+        .then((response) => {
+          if (response.data.status == 200) {
+            //点赞成功
+            this.$message.success("点赞成功");
+            this.answers[index].likeAnswerCount++;
+            this.answers[index].likeThisAnswer = true;
+          } else {
+            this.$message.error("点赞失败");
+          }
+        });
+    },
+    unLikeForQuestion() {
+      //取消点赞问题
+      var currentUserID = this.getCookie("currentUserID");
+      if (currentUserID == null) {
+        this.$router.push("/user/login");
+        this.$message.error("请先登录");
+        return;
+      }
+      request
+        .post("/userUnLike", {
+          likeUserID: currentUserID,
+          likePostID: this.question.id,
+          likeAnswerID: 0,
+        })
+        .then((response) => {
+          if (response.data.status == 200) {
+            this.$message.success("取消点赞成功");
+            this.likeQuestionCount--;
+            this.userLike.status = 0;
+          } else {
+            this.$message.error("取消点赞失败");
+          }
+        });
+    },
+    unLikeForAnswer(aid, index) {
+      //取消点赞回复
+      var currentUserID = this.getCookie("currentUserID");
+      if (currentUserID == null) {
+        this.$router.push("/user/login");
+        this.$message.error("请先登录");
+        return;
+      }
+      request
+        .post("/userUnLike", {
+          likeUserID: currentUserID,
+          likePostID: 0,
+          likeAnswerID: aid,
+        })
+        .then((response) => {
+          if (response.data.status == 200) {
+            this.$message.success("取消点赞成功");
+            this.answers[index].likeAnswerCount--;
+            this.answers[index].likeThisAnswer = false;
+            //console.log("index:"+index)
+          } else {
+            this.$message.error("取消点赞失败");
+          }
+        });
+    },
+  },
+  components: {
+    AnswerForAnswer,
+    editoritem,
+  },
+  mounted() {
+    var that = this;
+    request
+      .get("/getQuestionByID/" + that.$route.params.id)
+      .then((response) => {
+        if (response.data.data == null) {
+          that.isDelete = true;
+        }
+        that.question = response.data.data;
+        that.question.created_time = new Date(
+          response.data.data.created_time
+        ).toLocaleString();
+        request.get("/getUserByID/" + that.question.uid).then((response) => {
+          that.user = response.data.data;
+        });
+      });
+    //获取点赞数据
+    request
+      .get("/getLikeCountOfQuestion/" + that.$route.params.id)
+      .then((response) => {
+        that.likeQuestionCount = response.data.data;
+      });
+    //查看登录用户是否已经点赞过该问题
+    if (this.currentUserID != null) {
+      request
+        .get(
+          "/isUserLikedThisQuestion/" +
+            this.currentUserID +
+            "/" +
+            this.$route.params.id
+        )
+        .then((response) => {
+          //console.log(response)
+          if (response.data.data == true) {
+            //点赞过该问题
+            this.userLike.status = 1;
+          } else {
+            //未点赞
+            this.userLike.status = 0;
+          }
+        });
+    }
+    request
+      .get(
+        "/getAnswerByQuestionID/" +
+          that.$route.params.id +
+          "?pageNum=1&pageSize=10"
+      )
+      .then((response) => {
+        that.answers = response.data.data.list;
+        that.answerForQuestionTotal = response.data.data.total;
+        for (var i = 0; i < that.answers.length; i++) {
+          that.$set(this.answers[i], "show_answer", false);
+          that.answers[i].created_time = new Date(
+            that.answers[i].created_time
+          ).toLocaleString();
+        }
+        for (var i = 0; i < that.answers.length; i++) {
+          (function (i) {
+            request
+              .get("/getTotalOfAnswerForAnswer/" + that.answers[i].id)
+              .then((response) => {
+                // console.log(that.answers[i])
+                //that.answers[i].total = response.data.data
+                that.$set(that.answers[i], "total", response.data.data);
+              });
+            //获取回复的点赞记录
+            request
+              .get("/getLikeCountOfAnswer/" + that.answers[i].id)
+              .then((response) => {
+                that.$set(
+                  that.answers[i],
+                  "likeAnswerCount",
+                  response.data.data
+                );
+              });
+            //查询登录用户是否点赞过该回复
+            if (that.currentUserID != null) {
+              request
+                .get(
+                  "/isUserLikedThisAnswer/" +
+                    that.currentUserID +
+                    "/" +
+                    that.answers[i].id
+                )
+                .then((response) => {
+                  if (response.data.data == true) {
+                    //点赞过该回复
+                    that.$set(that.answers[i], "likeThisAnswer", true);
+                  } else {
+                    //未点赞
+                    that.$set(that.answers[i], "likeThisAnswer", false);
+                  }
+                });
+            }
+            //修改一下回答用户头像的路径
+            that.$set(
+              that.answers[i].user,
+              "img",
+              "http://120.77.37.14:8080/treehole/upload/" +
+                that.answers[i].user.img
+            );
+          })(i);
+        }
+      });
+  },
+};
 </script>
 
 <style>
-	.answer_username {
-		font-weight: bold;
-	}
+.answer_username {
+  font-weight: bold;
+}
 
-	.time {
-		color: grey;
-		font-size: small;
-	}
+.time {
+  color: grey;
+  font-size: small;
+}
 
-	.el-dialog {
-		width: 1020px;
-	}
+.el-dialog {
+  width: 1020px;
+}
 </style>

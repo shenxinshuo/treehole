@@ -3,11 +3,7 @@ server:
   servlet:
     context-path: /treehole
 spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: 
-    username: 
-    password: 
+
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8

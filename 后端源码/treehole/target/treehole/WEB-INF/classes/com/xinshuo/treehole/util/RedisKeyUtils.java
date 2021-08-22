@@ -6,6 +6,9 @@ public class RedisKeyUtils {
     public static final String MAP_KEY_USER_LIKED = "MAP_USER_LIKED";
     //保存用户被点赞数量的key
 //    public static final String MAP_KEY_USER_LIKED_COUNT = "MAP_USER_LIKED_COUNT";
+    //保存文章被点赞数量的key
+    public static final String MAP_KEY_LOOKCOUNT = "MAP_KEY_LOOK_COUNT";
+
 
     /**
      * 拼接点赞用户ID，被点赞文章ID，被点赞回答ID作为key
@@ -24,5 +27,14 @@ public class RedisKeyUtils {
         builder.append("::");
         builder.append(likeAnswerID);
         return builder.toString();
+    }
+
+    /**
+     * 获取hashkey，文章浏览量
+     * @param qid 帖子id
+     * @return String
+     */
+    public static String getMapHashKeyLookcount(int qid) {
+        return Integer.toString(qid);
     }
 }

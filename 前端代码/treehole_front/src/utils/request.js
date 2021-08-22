@@ -5,7 +5,7 @@ import router from '../router'
 axios.default.withCredentials = true //允许axiso携带cookie
 const request = axios.create({
 	baseURL: 'http://120.77.37.14:8080/treehole',//请求服务器的项目
-	//baseURL: 'http://localhost:8081/treehole',//请求本地的项目
+	// baseURL: 'http://localhost:8080/treehole',//请求本地的项目
 	timeout: 12000,
 	// withCredentials: true,
 	headers: {

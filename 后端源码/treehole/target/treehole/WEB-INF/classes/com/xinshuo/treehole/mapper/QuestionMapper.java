@@ -1,5 +1,6 @@
 package com.xinshuo.treehole.mapper;
 
+import com.xinshuo.treehole.entity.LookCount;
 import com.xinshuo.treehole.entity.Question;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
@@ -17,4 +18,5 @@ public interface QuestionMapper {
     void updateQuestion(Question question);
     void deleteQuestion(int id);
     List<Question> getQuestionsBySearch(String search);
+    void addLookCountByQid(LookCount lookCount);
 }
