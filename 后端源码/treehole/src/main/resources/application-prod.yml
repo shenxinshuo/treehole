@@ -5,9 +5,9 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://120.77.37.14:3306/treehole?serverTimezone=Asia/Shanghai
-    username: root
-    password: 2effd7cb20dd4b3a
+    url: 
+    username: 
+    password: 
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
