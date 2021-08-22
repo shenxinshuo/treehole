@@ -1,5 +1,6 @@
 package com.xinshuo.treehole.service;
 
+import com.xinshuo.treehole.entity.LookCount;
 import com.xinshuo.treehole.entity.UserLike;
 
 import java.util.List;
@@ -73,5 +74,30 @@ public interface RedisService {
 //     * @return
 //     */
 //    List<LikedCountDTO> getLikedCountFromRedis();
+
+    /**
+     * 帖子浏览量加1
+     * @param qid 帖子id
+     */
+    void addLookCount(int qid);
+
+    /**
+     * 获取浏览量
+     * @return int
+     */
+    List<LookCount> getLookCountFromRedis();
+
+    /**
+     * 获取浏览量(不删除数据)
+     * @return int
+     */
+    List<LookCount> getLookCountFromRedisButNotDelete();
+
+    /**
+     * 获取某篇帖子的浏览量
+     * @param qid 帖子id
+     * @return 浏览量
+     */
+    Long getLookCountOfQestion(int qid);
 
 }

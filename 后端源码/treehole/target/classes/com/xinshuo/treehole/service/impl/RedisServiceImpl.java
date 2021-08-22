@@ -1,5 +1,6 @@
 package com.xinshuo.treehole.service.impl;
 
+import com.xinshuo.treehole.entity.LookCount;
 import com.xinshuo.treehole.entity.UserLike;
 import com.xinshuo.treehole.service.RedisService;
 import com.xinshuo.treehole.util.Constant;
@@ -100,6 +101,58 @@ public class RedisServiceImpl implements RedisService {
             if (userLike.getLikeAnswerID() == aid && userLike.getStatus() == 1) {
                 count++;
             }
+        }
+        return count;
+    }
+
+    @Override
+    public void addLookCount(int qid) {
+        //存放浏览量的key就叫lookCount
+        Boolean hasKey = redisTemplate.opsForHash().hasKey(RedisKeyUtils.MAP_KEY_LOOKCOUNT, RedisKeyUtils.getMapHashKeyLookcount(qid));
+        if (hasKey) {
+            //存在key，加1
+            redisTemplate.opsForHash().increment(RedisKeyUtils.MAP_KEY_LOOKCOUNT, RedisKeyUtils.getMapHashKeyLookcount(qid),1L);
+        } else {
+            //不存在，创建
+            String hashKey = RedisKeyUtils.getMapHashKeyLookcount(qid);
+            String value = String.valueOf(1L);
+            redisTemplate.opsForHash().put(RedisKeyUtils.MAP_KEY_LOOKCOUNT, hashKey, value);
+        }
+    }
+
+    @Override
+    public List<LookCount> getLookCountFromRedis() {
+        Cursor<Map.Entry<Object, Object>> cursor = redisTemplate.opsForHash().scan(RedisKeyUtils.MAP_KEY_LOOKCOUNT, ScanOptions.NONE);
+        List<LookCount> list = new ArrayList<>();
+        while(cursor.hasNext()) {
+            Map.Entry<Object, Object> map = cursor.next();
+            Integer key = Integer.parseInt((String) map.getKey());
+            Long value = Long.parseLong((String) map.getValue());
+            list.add(new LookCount(key, value));
+            redisTemplate.opsForHash().delete(RedisKeyUtils.MAP_KEY_LOOKCOUNT, RedisKeyUtils.getMapHashKeyLookcount(key));
+        }
+        return list;
+    }
+
+    @Override
+    public List<LookCount> getLookCountFromRedisButNotDelete() {
+        Cursor<Map.Entry<Object, Object>> cursor = redisTemplate.opsForHash().scan(RedisKeyUtils.MAP_KEY_LOOKCOUNT, ScanOptions.NONE);
+        List<LookCount> list = new ArrayList<>();
+        while(cursor.hasNext()) {
+            Map.Entry<Object, Object> map = cursor.next();
+            Integer key = Integer.parseInt((String) map.getKey());
+            Long value = Long.parseLong((String) map.getValue());
+            list.add(new LookCount(key, value));
+        }
+        return list;
+    }
+
+    @Override
+    public Long getLookCountOfQestion(int qid) {
+        Object value = redisTemplate.opsForHash().get(RedisKeyUtils.MAP_KEY_LOOKCOUNT, RedisKeyUtils.getMapHashKeyLookcount(qid));
+        Long count = 0L;
+        if (value != null) {
+            count = Long.parseLong((String) value);
         }
         return count;
     }

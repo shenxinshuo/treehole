@@ -2,11 +2,14 @@ package com.xinshuo.treehole.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.xinshuo.treehole.entity.LookCount;
 import com.xinshuo.treehole.entity.Question;
 import com.xinshuo.treehole.entity.User;
 import com.xinshuo.treehole.mapper.QuestionMapper;
 import com.xinshuo.treehole.mapper.UserMapper;
+import com.xinshuo.treehole.service.LookCountService;
 import com.xinshuo.treehole.service.QuestionService;
+import com.xinshuo.treehole.service.RedisService;
 import com.xinshuo.treehole.util.KeyWordFilter;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -27,18 +30,36 @@ public class QuestionServiceImpl implements QuestionService {
     private QuestionMapper questionMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private RedisService redisService;
+    @Autowired
+    private LookCountService lookCountService;
+
+
     @Override
     public Question getQuestionByID(int id) {
-        return questionMapper.getQuestionByID(id);
+        //浏览量加1
+        redisService.addLookCount(id);
+        Question question = questionMapper.getQuestionByID(id);
+        long count = question.getLookCount() + redisService.getLookCountOfQestion(question.getId());
+        //大于10000就除以1000，前端以X.X万展示
+        count = count > 10000 ? count / 1000 : count;
+        question.setLookCount(count);
+        return question;
     }
 
     @Override
     public PageInfo<Question> getQuestions(int pageNum, int pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         List<Question> questions = questionMapper.getQuestions();
-        for (Question question: questions) {
+        for (Question question : questions) {
             question.setDescription(question.getDescription()
                     .substring(0, Math.min(question.getDescription().length(), 100)));
+            //将redis中的浏览量加进去
+            long count = question.getLookCount() + lookCountService.getLookCountOfQestion(question.getId());
+            //大于10000就除以1000，前端以X.X万展示
+            count = count > 10000 ? count / 1000 : count;
+            question.setLookCount(count);
             System.out.println(question.getDescription());
         }
         PageInfo<Question> pageinfo = new PageInfo<>(questions);
@@ -49,9 +70,14 @@ public class QuestionServiceImpl implements QuestionService {
     public PageInfo<Question> getQuestionsByType(String type, int pageNum, int pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         List<Question> questions = questionMapper.getQuestionsByType(type);
-        for (Question question: questions) {
+        for (Question question : questions) {
             question.setDescription(question.getDescription()
                     .substring(0, Math.min(question.getDescription().length(), 100)));
+            //将redis中的浏览量加进去
+            long count = question.getLookCount() + lookCountService.getLookCountOfQestion(question.getId());
+            //大于10000就除以1000，前端以X.X万展示
+            count = count > 10000 ? count / 1000 : count;
+            question.setLookCount(count);
             System.out.println(question.getDescription());
         }
         PageInfo<Question> pageinfo = new PageInfo<>(questions);
@@ -62,6 +88,15 @@ public class QuestionServiceImpl implements QuestionService {
     public PageInfo<Question> getQuestionsByUID(int uid, int pageNum, int pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         List<Question> questions = questionMapper.getQuestionsByUID(uid);
+        for (Question question : questions) {
+            question.setDescription(question.getDescription()
+                    .substring(0, Math.min(question.getDescription().length(), 100)));
+            //将redis中的浏览量加进去
+            long count = question.getLookCount() + lookCountService.getLookCountOfQestion(question.getId());
+            //大于10000就除以1000，前端以X.X万展示
+            count = count > 10000 ? count / 1000 : count;
+            question.setLookCount(count);
+        }
         PageInfo<Question> pageInfo = new PageInfo<>(questions);
         return pageInfo;
     }
@@ -89,15 +124,20 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public PageInfo<Question> getQuestionsBySearch(String search,int pageNum, int pageSize) {
+    public PageInfo<Question> getQuestionsBySearch(String search, int pageNum, int pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         List<Question> questions = questionMapper.getQuestionsBySearch(search);
-        for (Question question: questions) {
+        for (Question question : questions) {
             question.setDescription(question.getDescription()
                     .substring(0, Math.min(question.getDescription().length(), 100)));
             System.out.println(question.getDescription());
         }
         PageInfo<Question> pageInfo = new PageInfo<>(questions);
         return pageInfo;
+    }
+
+    @Override
+    public void addLookCountByQid(LookCount lookCount) {
+        questionMapper.addLookCountByQid(lookCount);
     }
 }

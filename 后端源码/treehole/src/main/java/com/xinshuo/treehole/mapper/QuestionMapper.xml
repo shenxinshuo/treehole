@@ -13,6 +13,7 @@
         <result column="description" property="description"/>
         <result column="created_time" property="created_time"/>
         <result column="delete_flag" property="delete_flag"/>
+        <result column="look_count" property="lookCount" javaType="java.lang.Long"/>
         <!--多对一关系-->
         <association property="user" javaType="com.xinshuo.treehole.entity.User">
             <id column="id" property="id"/>
@@ -59,4 +60,7 @@
     <delete id="deleteQuestion" parameterType="int">
         delete from t_question where id = #{id}
     </delete>
+    <update id="addLookCountByQid" parameterType="com.xinshuo.treehole.entity.LookCount">
+        update t_question set look_count = #{lookCount} where id = #{qid}
+    </update>
 </mapper>

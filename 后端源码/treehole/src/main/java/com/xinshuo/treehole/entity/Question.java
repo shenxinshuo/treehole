@@ -10,6 +10,7 @@ public class Question {
     private String description;
     private Date created_time;
     private int delete_flag = 0;//删除标识（0：正常，1：已删除）
+    private Long lookCount = 0L;//浏览量
 
     private User user;
 
@@ -87,5 +88,13 @@ public class Question {
 
     public void setCreated_time(Date created_time) {
         this.created_time = created_time;
+    }
+
+    public Long getLookCount() {
+        return lookCount;
+    }
+
+    public void setLookCount(Long lookCount) {
+        this.lookCount = lookCount;
     }
 }
