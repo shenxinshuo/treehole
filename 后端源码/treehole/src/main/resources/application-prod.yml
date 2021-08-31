@@ -3,7 +3,7 @@ server:
   servlet:
     context-path: /treehole
 spring:
-
+  
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8

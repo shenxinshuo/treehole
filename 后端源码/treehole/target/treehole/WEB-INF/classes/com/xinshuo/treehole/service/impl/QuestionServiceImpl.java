@@ -42,8 +42,6 @@ public class QuestionServiceImpl implements QuestionService {
         redisService.addLookCount(id);
         Question question = questionMapper.getQuestionByID(id);
         long count = question.getLookCount() + redisService.getLookCountOfQestion(question.getId());
-        //大于10000就除以1000，前端以X.X万展示
-        count = count > 10000 ? count / 1000 : count;
         question.setLookCount(count);
         return question;
     }
@@ -57,10 +55,7 @@ public class QuestionServiceImpl implements QuestionService {
                     .substring(0, Math.min(question.getDescription().length(), 100)));
             //将redis中的浏览量加进去
             long count = question.getLookCount() + lookCountService.getLookCountOfQestion(question.getId());
-            //大于10000就除以1000，前端以X.X万展示
-            count = count > 10000 ? count / 1000 : count;
             question.setLookCount(count);
-            System.out.println(question.getDescription());
         }
         PageInfo<Question> pageinfo = new PageInfo<>(questions);
         return pageinfo;
@@ -75,10 +70,8 @@ public class QuestionServiceImpl implements QuestionService {
                     .substring(0, Math.min(question.getDescription().length(), 100)));
             //将redis中的浏览量加进去
             long count = question.getLookCount() + lookCountService.getLookCountOfQestion(question.getId());
-            //大于10000就除以1000，前端以X.X万展示
-            count = count > 10000 ? count / 1000 : count;
             question.setLookCount(count);
-            System.out.println(question.getDescription());
+            //System.out.println(question.getDescription());
         }
         PageInfo<Question> pageinfo = new PageInfo<>(questions);
         return pageinfo;
@@ -93,8 +86,6 @@ public class QuestionServiceImpl implements QuestionService {
                     .substring(0, Math.min(question.getDescription().length(), 100)));
             //将redis中的浏览量加进去
             long count = question.getLookCount() + lookCountService.getLookCountOfQestion(question.getId());
-            //大于10000就除以1000，前端以X.X万展示
-            count = count > 10000 ? count / 1000 : count;
             question.setLookCount(count);
         }
         PageInfo<Question> pageInfo = new PageInfo<>(questions);
@@ -130,7 +121,7 @@ public class QuestionServiceImpl implements QuestionService {
         for (Question question : questions) {
             question.setDescription(question.getDescription()
                     .substring(0, Math.min(question.getDescription().length(), 100)));
-            System.out.println(question.getDescription());
+            //System.out.println(question.getDescription());
         }
         PageInfo<Question> pageInfo = new PageInfo<>(questions);
         return pageInfo;

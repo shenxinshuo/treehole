@@ -61,6 +61,6 @@
         delete from t_question where id = #{id}
     </delete>
     <update id="addLookCountByQid" parameterType="com.xinshuo.treehole.entity.LookCount">
-        update t_question set look_count = #{lookCount} where id = #{qid}
+        update t_question set look_count = #{lookCount} + look_count where id = #{qid}
     </update>
 </mapper>
